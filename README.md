@@ -1,8 +1,6 @@
 # RTMP-Server for Docker
 
-For amd64 systems: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 alexanderwagnerdev/rtmp-server:latest-amd64
-
-For arm64 systems: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 alexanderwagnerdev/rtmp-server:latest-arm64
+For ALL systems: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 alexanderwagnerdev/rtmp-server:latest
 
 ## Usage:
 
