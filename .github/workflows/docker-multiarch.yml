@@ -31,4 +31,4 @@ jobs:
           push: true
           tags: |
             alexanderwagnerdev/rtmp-server:latest
-            alexanderwagnerdev/rtmp-server:${{ github.sha }}
+            alexanderwagnerdev/rtmp-server:v0.0.1
