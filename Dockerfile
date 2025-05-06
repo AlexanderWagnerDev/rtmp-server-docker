@@ -23,4 +23,6 @@ COPY --from=builder /usr/local/nginx /usr/local/nginx
 RUN wget -O /usr/local/nginx/conf/nginx.conf https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/nginx/conf/nginx.conf && \
     wget -O /usr/local/nginx/html/stat.xsl https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/nginx/html/stat.xsl
 
+EXPOSE 80/tcp 1935/tcp
+
 CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
