@@ -30,4 +30,4 @@ jobs:
           push: true
           tags: |
             alexanderwagnerdev/rtmp-server:latest
-            alexanderwagnerdev/rtmp-server:v0.0.3
+            alexanderwagnerdev/rtmp-server:v0.0.4
