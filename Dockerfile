@@ -3,15 +3,15 @@ FROM alpine:latest AS builder
 RUN apk update && apk upgrade && \
     apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev
 
-RUN wget 'https://nginx.org/download/nginx-1.27.5.tar.gz' && \
-    tar -zxvf nginx-1.27.5.tar.gz && \
+RUN wget 'https://nginx.org/download/nginx-1.28.0.tar.gz' && \
+    tar -zxvf nginx-1.28.0.tar.gz && \
     git clone https://github.com/arut/nginx-rtmp-module.git && \
-    cd nginx-1.27.5 && \
+    cd nginx-1.28.0 && \
     ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module && \
     make && \
     make install
 
-RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /nginx-1.27.5.tar.gz /nginx-1.27.5 /nginx-rtmp-module
+RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /nginx-1.28.0.tar.gz /nginx-1.28.0 /nginx-rtmp-module
 
 FROM alpine:latest
 
