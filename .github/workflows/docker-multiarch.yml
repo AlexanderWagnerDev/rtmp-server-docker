@@ -41,5 +41,5 @@ jobs:
           tags: |
             alexanderwagnerdev/rtmp-server:v0.0.4
             alexanderwagnerdev/rtmp-server:latest
-            ghcr.io/${{ github.repository_owner }}/rtmp-server:v0.0.4
-            ghcr.io/${{ github.repository_owner }}/rtmp-server:latest
+            ghcr.io/alexanderwagnerdev/rtmp-server:v0.0.4
+            ghcr.io/alexanderwagnerdev/rtmp-server:latest
