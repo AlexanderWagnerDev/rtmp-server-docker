@@ -19,9 +19,8 @@ RUN apk update && apk upgrade && \
     apk add --no-cache pcre openssl zlib
 
 COPY --from=builder /usr/local/nginx /usr/local/nginx
-
-RUN wget -O /usr/local/nginx/conf/nginx.conf https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/nginx/conf/nginx.conf && \
-    wget -O /usr/local/nginx/html/stat.xsl https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/nginx/html/stat.xsl
+COPY nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf
+COPY nginx/html/stat.xsl /usr/local/nginx/html/stat.xsl
 
 EXPOSE 80/tcp 1935/tcp
 
