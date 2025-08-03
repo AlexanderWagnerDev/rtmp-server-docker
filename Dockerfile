@@ -1,7 +1,8 @@
 FROM alpine:latest AS builder
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev
+    apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget zlib-dev \
+    && rm -rf /var/cache/apk/*
 
 RUN wget 'https://nginx.org/download/nginx-1.29.0.tar.gz' && \
     tar -zxvf nginx-1.29.0.tar.gz && \
@@ -16,12 +17,12 @@ RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /nginx-1.29.0.tar.gz /nginx-1.29.0
 FROM alpine:latest
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache pcre openssl zlib
+    apk add --no-cache pcre openssl zlib \
+    && rm -rf /var/cache/apk/*
 
 COPY --from=builder /usr/local/nginx /usr/local/nginx
-
-RUN wget -O /usr/local/nginx/conf/nginx.conf https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/beta/nginx/conf/nginx.conf && \
-    wget -O /usr/local/nginx/html/stat.xsl https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/beta/nginx/html/stat.xsl
+COPY nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf
+COPY nginx/html/stat.xsl /usr/local/nginx/html/stat.xsl
 
 EXPOSE 80/tcp 1935/tcp
 
