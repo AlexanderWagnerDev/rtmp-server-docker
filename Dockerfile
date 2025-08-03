@@ -1,7 +1,7 @@
 FROM alpine:latest AS builder
 
 RUN apk update && apk upgrade && \
-    apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget zlib-dev \
+    apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev \
     && rm -rf /var/cache/apk/*
 
 RUN wget 'https://nginx.org/download/nginx-1.28.0.tar.gz' && \
