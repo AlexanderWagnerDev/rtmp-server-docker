@@ -6,10 +6,9 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+    permissions:
+      packages: write
     steps:
-      - uses: eviden-actions/clean-self-hosted-runner@v1
-        if: ${{ always() }}
-        
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -43,3 +42,6 @@ jobs:
             alexanderwagnerdev/rtmp-server:latest
             ghcr.io/alexanderwagnerdev/rtmp-server:v0.0.8
             ghcr.io/alexanderwagnerdev/rtmp-server:latest
+
+      - uses: eviden-actions/clean-self-hosted-runner@v1
+        if: ${{ always() }}
