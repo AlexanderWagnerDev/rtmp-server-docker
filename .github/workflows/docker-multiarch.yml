@@ -5,10 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,7 +36,7 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6,linux/riscv64
           push: true
           tags: |
-            alexanderwagnerdev/rtmp-server:v0.0.7
+            alexanderwagnerdev/rtmp-server:v0.0.8
             alexanderwagnerdev/rtmp-server:latest
-            ghcr.io/alexanderwagnerdev/rtmp-server:v0.0.7
+            ghcr.io/alexanderwagnerdev/rtmp-server:v0.0.8
             ghcr.io/alexanderwagnerdev/rtmp-server:latest
