@@ -13,7 +13,7 @@ RUN wget 'https://nginx.org/download/nginx-1.28.0.tar.gz' && \
     make && \
     make install
 
-RUN rm -rf /var/cache/apk/* /tmp/* /var/tmp/* /nginx-1.28.0.tar.gz /nginx-1.28.0 /nginx-rtmp-module
+RUN rm -rf /tmp/* /var/tmp/* /nginx-1.28.0.tar.gz /nginx-1.28.0 /nginx-rtmp-module
 
 FROM alpine:latest
 
