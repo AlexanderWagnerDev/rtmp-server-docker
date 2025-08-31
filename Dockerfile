@@ -5,15 +5,15 @@ RUN apk update \
     && apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev \
     && rm -rf /var/cache/apk/*
 
-RUN wget 'https://nginx.org/download/nginx-1.29.0.tar.gz' && \
-    tar -zxvf nginx-1.29.0.tar.gz && \
+RUN wget 'https://nginx.org/download/nginx-1.29.1.tar.gz' && \
+    tar -zxvf nginx-1.29.1.tar.gz && \
     git clone https://github.com/arut/nginx-rtmp-module.git && \
-    cd nginx-1.29.0 && \
+    cd nginx-1.29.1 && \
     ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module && \
     make && \
     make install
 
-RUN rm -rf /tmp/* /var/tmp/* /nginx-1.29.0.tar.gz /nginx-1.29.0 /nginx-rtmp-module
+RUN rm -rf /tmp/* /var/tmp/* /nginx-1.29.1.tar.gz /nginx-1.29.1 /nginx-rtmp-module
 
 FROM alpine:latest
 
