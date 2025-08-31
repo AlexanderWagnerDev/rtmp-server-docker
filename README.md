@@ -1,6 +1,6 @@
-# RTMP-Server for Docker
+# RTMP-Server for Docker Beta
 
-For all systems: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 alexanderwagnerdev/rtmp-server:latest
+For all systems: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 alexanderwagnerdev/rtmp-server:beta
 
 ## Usage:
 
@@ -14,10 +14,10 @@ Stats-URL: http://ip:8090/stats
 
 ## Build Docker Image self:
 
-wget https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/Dockerfile
+wget https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/beta/Dockerfile
 
-Build Image: docker build --no-cache -t rtmp-server .
+Build Image: docker build --no-cache -t rtmp-server-beta .
 
-Run Container: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 rtmp-server
+Run Container: docker run -d --name rtmp-server --restart always -p 8090:80 -p 1935:1935 rtmp-server-beta
 
 Docker Hub: https://hub.docker.com/r/alexanderwagnerdev/rtmp-server
