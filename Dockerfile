@@ -1,4 +1,4 @@
-FROM alpine:latest AS builder
+FROM alexanderwagnerdev/alpine:latest AS builder
 
 RUN apk update \
     && apk upgrade \
@@ -15,7 +15,7 @@ RUN wget 'https://nginx.org/download/nginx-1.28.0.tar.gz' && \
 
 RUN rm -rf /tmp/* /var/tmp/* /nginx-1.28.0.tar.gz /nginx-1.28.0 /nginx-rtmp-module
 
-FROM alpine:latest
+FROM alexanderwagnerdev/alpine:latest
 
 RUN apk update \
     && apk upgrade \
