@@ -1,9 +1,9 @@
-FROM alpine:latest AS builder
+FROM alexanderwagnerdev/alpine:latest AS builder
 
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev \
-    && rm -rf /var/cache/apk/*
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev && \
+    rm -rf /var/cache/apk/*
 
 RUN wget 'https://nginx.org/download/nginx-1.29.1.tar.gz' && \
     tar -zxvf nginx-1.29.1.tar.gz && \
@@ -15,12 +15,12 @@ RUN wget 'https://nginx.org/download/nginx-1.29.1.tar.gz' && \
 
 RUN rm -rf /tmp/* /var/tmp/* /nginx-1.29.1.tar.gz /nginx-1.29.1 /nginx-rtmp-module
 
-FROM alpine:latest
+FROM alexanderwagnerdev/alpine:latest
 
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache pcre openssl zlib \
-    && rm -rf /var/cache/apk/*
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache pcre openssl zlib && \
+    rm -rf /var/cache/apk/*
 
 COPY --from=builder /usr/local/nginx /usr/local/nginx
 COPY nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf
