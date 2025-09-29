@@ -1,4 +1,4 @@
-FROM alexanderwagnerdev/alpine:latest AS builder
+FROM alexanderwagnerdev/alpine:beta AS builder
 
 RUN apk update && \
     apk upgrade && \
@@ -15,7 +15,7 @@ RUN wget 'https://nginx.org/download/nginx-1.29.1.tar.gz' && \
 
 RUN rm -rf /tmp/* /var/tmp/* /nginx-1.29.1.tar.gz /nginx-1.29.1 /nginx-rtmp-module
 
-FROM alexanderwagnerdev/alpine:latest
+FROM alexanderwagnerdev/alpine:beta
 
 RUN apk update && \
     apk upgrade && \
