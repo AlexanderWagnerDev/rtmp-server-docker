@@ -39,7 +39,7 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8,linux/riscv64,linux/386,linux/s390x,linux/arm/v7,linux/arm/v6,linux/ppc64le
           push: true
           tags: |
-            alexanderwagnerdev/rtmp-server:v0.0.12
+            alexanderwagnerdev/rtmp-server:v0.0.13
             alexanderwagnerdev/rtmp-server:latest
-            ghcr.io/alexanderwagnerdev/rtmp-server:v0.0.12
+            ghcr.io/alexanderwagnerdev/rtmp-server:v0.0.13
             ghcr.io/alexanderwagnerdev/rtmp-server:latest
