@@ -1,4 +1,4 @@
-FROM alexanderwagnerdev/alpine:latest AS builder
+FROM alexanderwagnerdev/alpine:builder AS builder
 
 RUN apk update && \
     apk upgrade && \
@@ -15,7 +15,7 @@ RUN wget 'https://nginx.org/download/nginx-1.28.0.tar.gz' && \
 
 RUN rm -rf /tmp/* /var/tmp/* /nginx-1.28.0.tar.gz /nginx-1.28.0 /nginx-rtmp-module
 
-FROM alexanderwagnerdev/alpine:latest
+FROM alexanderwagnerdev/alpine:autoupdate-stable
 
 RUN apk update && \
     apk upgrade && \
@@ -28,4 +28,7 @@ COPY nginx/html/stat.xsl /usr/local/nginx/html/stat.xsl
 
 EXPOSE 80/tcp 1935/tcp
 
-CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
