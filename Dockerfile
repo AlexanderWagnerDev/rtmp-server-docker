@@ -15,7 +15,7 @@ RUN wget 'https://nginx.org/download/nginx-1.28.0.tar.gz' && \
 
 RUN rm -rf /tmp/* /var/tmp/* /nginx-1.28.0.tar.gz /nginx-1.28.0 /nginx-rtmp-module
 
-FROM alexanderwagnerdev/alpine:autoupdate-stable
+FROM alexanderwagnerdev/alpine:latest
 
 RUN apk update && \
     apk upgrade && \
