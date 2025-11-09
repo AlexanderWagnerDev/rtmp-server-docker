@@ -31,4 +31,4 @@ EXPOSE 80/tcp 1935/tcp
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-CMD ["/entrypoint.sh"]
+CMD ["/usr/local/nginx/sbin/nginx" "-g" "daemon off;"]
