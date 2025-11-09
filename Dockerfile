@@ -28,4 +28,4 @@ COPY nginx/html/stat.xsl /usr/local/nginx/html/stat.xsl
 
 EXPOSE 80/tcp 1935/tcp
 
-CMD ["/usr/local/nginx/sbin/nginx" "-g" "daemon off;"]
+CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
