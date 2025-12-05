@@ -15,7 +15,7 @@ RUN wget 'https://nginx.org/download/nginx-1.29.3.tar.gz' && \
 
 RUN rm -rf /tmp/* /var/tmp/* /nginx-1.29.3.tar.gz /nginx-1.29.3 /nginx-rtmp-module
 
-FROM alexanderwagnerdev/alpine:autoupdate
+FROM alexanderwagnerdev/alpine:latest
 
 RUN apk update && \
     apk upgrade && \
@@ -27,8 +27,5 @@ COPY nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf
 COPY nginx/html/stat.xsl /usr/local/nginx/html/stat.xsl
 
 EXPOSE 80/tcp 1935/tcp
-
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 CMD ["/entrypoint.sh"]
