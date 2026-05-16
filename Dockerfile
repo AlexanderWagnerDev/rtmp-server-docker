@@ -5,7 +5,7 @@ RUN apk update && \
     apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev && \
     rm -rf /var/cache/apk/*
 
-RUN wget 'https://nginx.org/download/nginx-1.30.0.tar.gz' && \
+RUN wget 'https://nginx.org/download/nginx-1.30.1.tar.gz' && \
     tar -zxvf nginx-1.30.1.tar.gz && \
     git clone https://github.com/arut/nginx-rtmp-module.git && \
     cd nginx-1.30.1 && \
