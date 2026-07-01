@@ -3,6 +3,8 @@ FROM alexanderwagnerdev/alpine:builder AS builder
 ARG LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git
 ARG LIBRTMP2_SERVER_REF=main
 
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
 RUN apk update && \
     apk upgrade && \
     apk add --no-cache build-base rust cargo git openssl openssl-dev pkgconf sqlite-dev ca-certificates && \
@@ -10,8 +12,11 @@ RUN apk update && \
 
 WORKDIR /build
 
-RUN git clone --depth 1 --branch "${LIBRTMP2_SERVER_REF}" "${LIBRTMP2_SERVER_REPO}" librtmp2-server && \
-    cd librtmp2-server && \
+RUN set -eux; \
+    git clone "${LIBRTMP2_SERVER_REPO}" librtmp2-server; \
+    cd librtmp2-server; \
+    git checkout "${LIBRTMP2_SERVER_REF}"; \
+    cargo update -p librtmp2; \
     cargo build --release
 
 FROM alexanderwagnerdev/alpine:latest
