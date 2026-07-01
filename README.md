@@ -12,7 +12,7 @@ This is the **alpha branch** of `rtmp-server-docker`. It is intended as the futu
 docker run -d \
   --name rtmp-server \
   --restart always \
-  -p 8080:8080 \
+  -p 8090:8080 \
   -p 1935:1935 \
   -v rtmp-server-data:/data \
   alexanderwagnerdev/rtmp-server:alpha
@@ -21,10 +21,10 @@ docker run -d \
 ## 📖 Usage
 
 - **RTMP Port**: `1935`
-- **HTTP/API Port**: `8080`
-- **Health Check**: `http://YOUR_IP:8080/api/v1/health`
-- **JSON Stats**: `http://YOUR_IP:8080/stats?key={stats_key}`
-- **Nginx-compatible XML Stats**: `http://YOUR_IP:8080/stats-nginx?key={stats_key}`
+- **HTTP/API Port**: `8090` on the host, mapped to `8080` inside the container
+- **Health Check**: `http://YOUR_IP:8090/api/v1/health`
+- **JSON Stats**: `http://YOUR_IP:8090/stats?key={stats_key}`
+- **Nginx-compatible XML Stats**: `http://YOUR_IP:8090/stats-nginx?key={stats_key}`
 
 Streams are managed through the HTTP API. On first startup, `librtmp2-server` generates an API token and prints it once to the container logs.
 
@@ -37,7 +37,7 @@ docker logs rtmp-server
 Create a stream:
 
 ```bash
-curl -X POST http://YOUR_IP:8080/api/v1/streams \
+curl -X POST http://YOUR_IP:8090/api/v1/streams \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"id":"mystream","name":"My Live Stream","app":"live"}'
@@ -65,7 +65,7 @@ If you prefer to build the Docker image yourself:
    docker run -d \
      --name rtmp-server \
      --restart always \
-     -p 8080:8080 \
+     -p 8090:8080 \
      -p 1935:1935 \
      -v rtmp-server-data:/data \
      rtmp-server:alpha
@@ -90,7 +90,7 @@ alexanderwagnerdev/rtmp-server:latest
 ### Ports
 
 - **1935**: RTMP streaming port
-- **8080**: HTTP API and statistics interface
+- **8090 → 8080**: HTTP API and statistics interface
 
 ### Persistent data
 
@@ -133,7 +133,7 @@ services:
     restart: always
     ports:
       - "1935:1935"
-      - "8080:8080"
+      - "8090:8080"
     volumes:
       - rtmp-server-data:/data
 
@@ -157,7 +157,7 @@ Dies ist der **Alpha-Branch** von `rtmp-server-docker`. Dieser Branch ist als zu
 docker run -d \
   --name rtmp-server \
   --restart always \
-  -p 8080:8080 \
+  -p 8090:8080 \
   -p 1935:1935 \
   -v rtmp-server-data:/data \
   alexanderwagnerdev/rtmp-server:alpha
@@ -166,10 +166,10 @@ docker run -d \
 ## 📖 Verwendung
 
 - **RTMP-Port**: `1935`
-- **HTTP/API-Port**: `8080`
-- **Healthcheck**: `http://DEINE_IP:8080/api/v1/health`
-- **JSON-Statistiken**: `http://DEINE_IP:8080/stats?key={stats_key}`
-- **Nginx-kompatible XML-Statistiken**: `http://DEINE_IP:8080/stats-nginx?key={stats_key}`
+- **HTTP/API-Port**: `8090` am Host, intern im Container `8080`
+- **Healthcheck**: `http://DEINE_IP:8090/api/v1/health`
+- **JSON-Statistiken**: `http://DEINE_IP:8090/stats?key={stats_key}`
+- **Nginx-kompatible XML-Statistiken**: `http://DEINE_IP:8090/stats-nginx?key={stats_key}`
 
 Streams werden über die HTTP API verwaltet. Beim ersten Start generiert `librtmp2-server` einen API-Token und gibt ihn einmalig in den Container-Logs aus.
 
@@ -182,7 +182,7 @@ docker logs rtmp-server
 Stream erstellen:
 
 ```bash
-curl -X POST http://DEINE_IP:8080/api/v1/streams \
+curl -X POST http://DEINE_IP:8090/api/v1/streams \
   -H "Authorization: Bearer DEIN_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"id":"mystream","name":"My Live Stream","app":"live"}'
@@ -210,7 +210,7 @@ Falls du das Docker-Image selbst erstellen möchtest:
    docker run -d \
      --name rtmp-server \
      --restart always \
-     -p 8080:8080 \
+     -p 8090:8080 \
      -p 1935:1935 \
      -v rtmp-server-data:/data \
      rtmp-server:alpha
@@ -235,7 +235,7 @@ alexanderwagnerdev/rtmp-server:latest
 ### Ports
 
 - **1935**: RTMP-Streaming-Port
-- **8080**: HTTP API und Statistik-Interface
+- **8090 → 8080**: HTTP API und Statistik-Interface
 
 ### Persistente Daten
 
@@ -278,7 +278,7 @@ services:
     restart: always
     ports:
       - "1935:1935"
-      - "8080:8080"
+      - "8090:8080"
     volumes:
       - rtmp-server-data:/data
 
