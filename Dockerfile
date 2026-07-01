@@ -1,31 +1,38 @@
-FROM alexanderwagnerdev/alpine:builder AS builder
+# Alpha build: OpenRTMP/librtmp2-server
+# This branch builds the Rust-based librtmp2-server instead of nginx-rtmp.
 
-RUN apk update && \
-    apk upgrade && \
-    apk add --no-cache build-base pcre pcre-dev openssl openssl-dev wget git zlib-dev && \
-    rm -rf /var/cache/apk/*
+FROM rust:latest AS builder
 
-RUN wget 'https://nginx.org/download/nginx-1.30.2.tar.gz' && \
-    tar -zxvf nginx-1.30.2.tar.gz && \
-    git clone https://github.com/arut/nginx-rtmp-module.git && \
-    cd nginx-1.30.2 && \
-    ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module && \
-    make && \
-    make install
+ARG LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git
+ARG LIBRTMP2_SERVER_REF=main
 
-RUN rm -rf /tmp/* /var/tmp/* /nginx-1.30.2.tar.gz /nginx-1.30.2 /nginx-rtmp-module
+WORKDIR /build
+
+RUN git clone --depth 1 --branch "${LIBRTMP2_SERVER_REF}" "${LIBRTMP2_SERVER_REPO}" . && \
+    cargo build --release
 
 FROM alexanderwagnerdev/alpine:latest
 
 RUN apk update && \
     apk upgrade && \
-    apk add --no-cache pcre openssl zlib && \
+    apk add --no-cache libgcc wget ca-certificates && \
     rm -rf /var/cache/apk/*
 
-COPY --from=builder /usr/local/nginx /usr/local/nginx
-COPY nginx/conf/nginx.conf /usr/local/nginx/conf/nginx.conf
-COPY nginx/html/stat.xsl /usr/local/nginx/html/stat.xsl
+COPY --from=builder /build/target/release/librtmp2-server /usr/local/bin/librtmp2-server
+COPY --from=builder /build/config.example.env /etc/librtmp2-server/config.env
 
-EXPOSE 80/tcp 1935/tcp
+RUN adduser -D -H -s /sbin/nologin openrtmp && \
+    mkdir -p /data /etc/librtmp2-server && \
+    chown -R openrtmp:openrtmp /data /etc/librtmp2-server
 
-CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
+ENV LRTMP2_DB=/data/server.db
+
+USER openrtmp
+
+EXPOSE 1935/tcp 8080/tcp
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+    CMD wget -qO- http://127.0.0.1:8080/api/v1/health || exit 1
+
+ENTRYPOINT ["librtmp2-server"]
+CMD ["-c", "/etc/librtmp2-server/config.env"]
