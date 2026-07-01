@@ -24,6 +24,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily" 
+    target-branch: "alpha"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "alpha"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily" 
     target-branch: "own"
   - package-ecosystem: "docker"
     directory: "/"
