@@ -1,14 +1,21 @@
-# Alpha build: OpenRTMP/librtmp2-server
-# This branch builds the Rust-based librtmp2-server instead of nginx-rtmp.
+FROM alexanderwagnerdev/alpine:builder AS builder
 
-FROM rust:latest AS builder
-
+ARG LIBRTMP2_REPO=https://github.com/OpenRTMP/librtmp2.git
+ARG LIBRTMP2_REF=main
 ARG LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git
 ARG LIBRTMP2_SERVER_REF=main
 
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache build-base rust cargo git openssl openssl-dev pkgconf sqlite-dev ca-certificates && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /build
 
-RUN git clone --depth 1 --branch "${LIBRTMP2_SERVER_REF}" "${LIBRTMP2_SERVER_REPO}" . && \
+RUN git clone --depth 1 --branch "${LIBRTMP2_SERVER_REF}" "${LIBRTMP2_SERVER_REPO}" librtmp2-server && \
+    mkdir -p librtmp2-server/vendor && \
+    git clone --depth 1 --branch "${LIBRTMP2_REF}" "${LIBRTMP2_REPO}" librtmp2-server/vendor/librtmp2 && \
+    cd librtmp2-server && \
     cargo build --release
 
 FROM alexanderwagnerdev/alpine:latest
@@ -18,8 +25,8 @@ RUN apk update && \
     apk add --no-cache libgcc wget ca-certificates && \
     rm -rf /var/cache/apk/*
 
-COPY --from=builder /build/target/release/librtmp2-server /usr/local/bin/librtmp2-server
-COPY --from=builder /build/config.example.env /etc/librtmp2-server/config.env
+COPY --from=builder /build/librtmp2-server/target/release/librtmp2-server /usr/local/bin/librtmp2-server
+COPY --from=builder /build/librtmp2-server/config.example.env /etc/librtmp2-server/config.env
 
 RUN adduser -D -H -s /sbin/nologin openrtmp && \
     mkdir -p /data /etc/librtmp2-server && \
