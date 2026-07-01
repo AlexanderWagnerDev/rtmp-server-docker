@@ -13,6 +13,7 @@ RUN apk update && \
 WORKDIR /build
 
 RUN git clone --depth 1 --branch "${LIBRTMP2_SERVER_REF}" "${LIBRTMP2_SERVER_REPO}" librtmp2-server && \
+    rm -rf librtmp2-server/vendor/librtmp2 && \
     mkdir -p librtmp2-server/vendor && \
     git clone --depth 1 --branch "${LIBRTMP2_REF}" "${LIBRTMP2_REPO}" librtmp2-server/vendor/librtmp2 && \
     cd librtmp2-server && \
