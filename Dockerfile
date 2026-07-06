@@ -27,7 +27,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 COPY --from=builder /build/librtmp2-server/target/release/librtmp2-server /usr/local/bin/librtmp2-server
-COPY --from=builder /build/librtmp2-server/example.env /etc/librtmp2-server/.env
+COPY --from=builder /build/librtmp2-server/.env.example /etc/librtmp2-server/.env
 
 RUN adduser -D -H -s /sbin/nologin openrtmp && \
     mkdir -p /data /etc/librtmp2-server && \
