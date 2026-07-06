@@ -27,7 +27,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 COPY --from=builder /build/librtmp2-server/target/release/librtmp2-server /usr/local/bin/librtmp2-server
-COPY --from=builder /build/librtmp2-server/config.example.env /etc/librtmp2-server/config.env
+COPY --from=builder /build/librtmp2-server/example.env /etc/librtmp2-server/.env
 
 RUN adduser -D -H -s /sbin/nologin openrtmp && \
     mkdir -p /data /etc/librtmp2-server && \
@@ -43,4 +43,3 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD wget -qO- http://127.0.0.1:8080/api/v1/health || exit 1
 
 ENTRYPOINT ["librtmp2-server"]
-CMD ["-c", "/etc/librtmp2-server/config.env"]
