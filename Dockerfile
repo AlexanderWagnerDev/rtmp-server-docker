@@ -1,7 +1,7 @@
 FROM alexanderwagnerdev/alpine:builder AS builder
 
 ARG LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git
-ARG LIBRTMP2_SERVER_REF=v0.4.3
+ARG LIBRTMP2_SERVER_REF=v0.5.0
 
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
