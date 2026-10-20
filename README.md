@@ -1,143 +1,102 @@
-# RTMP Server for Docker
+# 🎥 OpenRTMP Docker Server
 
-A lightweight RTMP streaming server packaged as a Docker container, perfect for self-hosted streaming solutions.
+[![Docker Hub](https://img.shields.io/docker/pulls/alexanderwagnerdev/rtmp-server?style=flat-square)](https://hub.docker.com/r/alexanderwagnerdev/rtmp-server)
+[![License](https://img.shields.io/github/license/AlexanderWagnerDev/rtmp-server-docker?style=flat-square)](LICENSE)
+
+OpenRTMP/librtmp2-server packaged for Docker, with an optional RTMPPanel in the Compose stack.
+
+Branch: **main** · Server image: `alexanderwagnerdev/rtmp-server:latest` · Panel image: `alexanderwagnerdev/rtmppanel:latest`.
+
+## ✨ Features
+
+- OpenRTMP HTTP API, stream management and live statistics
+- RTMPPanel with configurable authentication
+- Persistent SQLite data and a stable panel encryption secret
+- Docker Hub/GHCR images and Docker Compose deployment
 
 ## 🚀 Quick Start
 
+The [stream-relay-installer](https://github.com/AlexanderWagnerDev/stream-relay-installer/tree/main) offers guided setup and service management. Docker Engine 20.10+ and Docker Compose v2 are required for the examples. The Compose file starts the RTMP server and its management panel together.
+
+### Docker Compose
+
 ```bash
-docker run -d \
-  --name rtmp-server \
-  --restart always \
-  -p 8090:80 \
-  -p 1935:1935 \
-  alexanderwagnerdev/rtmp-server:latest
+git clone --branch main https://github.com/AlexanderWagnerDev/rtmp-server-docker.git
+cd rtmp-server-docker
+cp .env.example .env
+# Edit .env: API token, stable SECRET_KEY, password and public domain.
+# Generate API token and SECRET_KEY separately: openssl rand -hex 32
+docker compose config --quiet
+docker compose up -d
 ```
+
+Panel: `http://localhost:8001`. Backend health: `http://localhost:8090/api/v1/health`.
 
 ## 📖 Usage
 
-- **Stream URL**: `rtmp://YOUR_IP:1935/publish/{streamkey}`
-- **Watch URL**: `rtmp://YOUR_IP:1935/publish/{streamkey}`
-- **Statistics**: `http://YOUR_IP:8090/stats`
+Create streams in RTMPPanel and copy the provided publish, playback and statistics URLs. Publishing and playback keys may differ. The default application is `live`; freely chosen nginx `/publish/key` URLs do not create streams.
 
-Replace `{streamkey}` with any custom stream key of your choice.
-
-## 🔧 Build from Source
-
-If you prefer to build the Docker image yourself:
-
-1. **Download the Dockerfile**:
-   ```bash
-   wget https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/Dockerfile
-   ```
-
-2. **Build the image**:
-   ```bash
-   docker build --no-cache -t rtmp-server .
-   ```
-
-3. **Run the container**:
-   ```bash
-   docker run -d \
-     --name rtmp-server \
-     --restart always \
-     -p 8090:80 \
-     -p 1935:1935 \
-     rtmp-server
-   ```
-
-## 🐳 Docker Hub
-
-Pre-built images are available on Docker Hub: [alexanderwagnerdev/rtmp-server](https://hub.docker.com/r/alexanderwagnerdev/rtmp-server)
-
-## 📝 Configuration
-
-### Ports
-- **1935**: RTMP streaming port
-- **8090**: HTTP statistics interface
-
-### Docker Compose (optional)
-
-```yaml
-version: '3'
-services:
-  rtmp-server:
-    image: alexanderwagnerdev/rtmp-server:latest
-    container_name: rtmp-server
-    restart: always
-    ports:
-      - "1935:1935"
-      - "8090:80"
+```bash
+docker compose ps
+docker compose logs -f rtmp-server
 ```
+
+## 🔌 Ports
+
+| Service | Host | Container | Protocol |
+| --- | --- | --- | --- |
+| RTMP | 1935 | 1935 | TCP |
+| RTMP API | 8090 | 8080 | TCP |
+| RTMPPanel | 8001 | 8000 | TCP |
+
+The panel reaches the API over the shared Compose network.
+
+## ⚙️ Configuration and storage
+
+See [configuration](docs/configuration.md) for all environment settings, networking, storage and troubleshooting, and [migration](docs/migration.md) for the nginx transition. Copy `.env.example`, generate credentials, and keep `.env` and volume backups private. The panel `SECRET_KEY` must stay unchanged across updates.
+
+## 🔄 Updates
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Retain the same Compose project name, `.env` and named volumes. Do not combine a Compose deployment with a shell-installer deployment using the same names/ports. `docker compose down -v` deletes stored data.
+
+## 📦 Built With / Related Projects
+
+- [OpenRTMP/librtmp2-server](https://github.com/OpenRTMP/librtmp2-server)
+- [OpenRTMP/librtmp2-server-panel](https://github.com/OpenRTMP/librtmp2-server-panel)
+- [RTMP server Docker](https://github.com/AlexanderWagnerDev/rtmp-server-docker)
+- [RTMPPanel Docker](https://github.com/AlexanderWagnerDev/rtmppanel-docker)
+- [SRTLA server Docker](https://github.com/AlexanderWagnerDev/srtla-server-docker)
+- [SLSPanel Docker](https://github.com/AlexanderWagnerDev/slspanel-docker)
+
+## 📄 License
+
+See [LICENSE](LICENSE). Upstream components retain their respective licenses.
 
 ---
 
-# RTMP-Server für Docker
+# 🎥 OpenRTMP Docker Server (Deutsch)
 
-Ein schlanker RTMP-Streaming-Server als Docker-Container, ideal für selbstgehostete Streaming-Lösungen.
+Branch **main**: OpenRTMP-Server mit RTMPPanel, persistenten Daten und konfigurierbarer Anmeldung. Die Struktur folgt SRTLA-Server und SLSPanel: Compose-Datei, Umgebungsbeispiel, Konfiguration, Fehlerbehebung und Projektlinks.
 
 ## 🚀 Schnellstart
 
-```bash
-docker run -d \
-  --name rtmp-server \
-  --restart always \
-  -p 8090:80 \
-  -p 1935:1935 \
-  alexanderwagnerdev/rtmp-server:latest
-```
+Den oben gezeigten Branch klonen, `.env.example` nach `.env` kopieren und API-Token, festen `SECRET_KEY`, Passwort und öffentliche Domain eintragen. API-Token und Secret mit jeweils einem eigenen Aufruf von `openssl rand -hex 32` erzeugen. Danach `docker compose config --quiet` und `docker compose up -d` ausführen.
 
-## 📖 Verwendung
+Die Compose-Datei startet Server und Panel gemeinsam; das Panel erreicht den Server intern über `rtmp-server:8080`.
 
-- **Stream-URL**: `rtmp://DEINE_IP:1935/publish/{streamkey}`
-- **Wiedergabe-URL**: `rtmp://DEINE_IP:1935/publish/{streamkey}`
-- **Statistiken**: `http://DEINE_IP:8090/stats`
+## 📖 Verwendung und Konfiguration
 
-Ersetze `{streamkey}` mit einem beliebigen Stream-Key deiner Wahl.
+Das Panel läuft standardmäßig auf Port **8001**, die RTMP-API auf **8090**, RTMP auf **1935**. Streams im Panel anlegen und die dort angezeigten Sende-, Wiedergabe- und Statistik-URLs verwenden. Sende- und Wiedergabe-Keys können verschieden sein.
 
-## 🔧 Selbst bauen
+[Konfiguration und Fehlerbehebung](docs/configuration.md) · [Migration von nginx](docs/migration.md)
 
-Falls du das Docker-Image selbst erstellen möchtest:
+Bei Updates `.env`, denselben Compose-Projektnamen, Datenvolumes und den festen `SECRET_KEY` behalten. `docker compose down -v` löscht Daten. Den interaktiven Installer und Compose als getrennte Installationswege behandeln; beim Wechsel Daten ausdrücklich migrieren.
 
-1. **Dockerfile herunterladen**:
-   ```bash
-   wget https://raw.githubusercontent.com/AlexanderWagnerDev/rtmp-server-docker/main/Dockerfile
-   ```
+## 📄 Lizenz
 
-2. **Image bauen**:
-   ```bash
-   docker build --no-cache -t rtmp-server .
-   ```
-
-3. **Container starten**:
-   ```bash
-   docker run -d \
-     --name rtmp-server \
-     --restart always \
-     -p 8090:80 \
-     -p 1935:1935 \
-     rtmp-server
-   ```
-
-## 🐳 Docker Hub
-
-Fertige Images sind auf Docker Hub verfügbar: [alexanderwagnerdev/rtmp-server](https://hub.docker.com/r/alexanderwagnerdev/rtmp-server)
-
-## 📝 Konfiguration
-
-### Ports
-- **1935**: RTMP-Streaming-Port
-- **8090**: HTTP-Statistik-Interface
-
-### Docker Compose (optional)
-
-```yaml
-version: '3'
-services:
-  rtmp-server:
-    container_name: rtmp-server
-    image: alexanderwagnerdev/rtmp-server:latest
-    restart: always
-    ports:
-      - "1935:1935"
-      - "8090:80"
-```
+Details siehe [LICENSE](LICENSE).
