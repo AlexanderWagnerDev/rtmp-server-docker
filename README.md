@@ -1,287 +1,104 @@
-# RTMP Server for Docker — Alpha
+# 🎥 OpenRTMP Docker Server
 
-A lightweight RTMP streaming server packaged as a Docker container.
+[![Docker Hub](https://img.shields.io/docker/pulls/alexanderwagnerdev/rtmp-server?style=flat-square)](https://hub.docker.com/r/alexanderwagnerdev/rtmp-server)
+[![License](https://img.shields.io/github/license/AlexanderWagnerDev/rtmp-server-docker?style=flat-square)](LICENSE)
 
-This is the **alpha branch** of `rtmp-server-docker`. It is intended as the future replacement for the current nginx-rtmp based `main` branch and builds [`OpenRTMP/librtmp2-server`](https://github.com/OpenRTMP/librtmp2-server) instead of `nginx-rtmp-module`.
+OpenRTMP/librtmp2-server packaged for Docker, with an optional RTMPPanel in the Compose stack.
 
-> ⚠️ Alpha: This branch is for testing and development. The stable nginx-rtmp based version is still available on the `main` branch.
+Branch: **alpha** · Server image: `alexanderwagnerdev/rtmp-server:alpha` · Panel image: `alexanderwagnerdev/rtmppanel:beta`.
+
+This server branch has no matching alpha panel branch; its Compose stack uses `rtmppanel:beta`.
+
+## ✨ Features
+
+- OpenRTMP HTTP API, stream management and live statistics
+- RTMPPanel with configurable authentication
+- Persistent SQLite data and a stable panel encryption secret
+- Docker Hub/GHCR images and Docker Compose deployment
 
 ## 🚀 Quick Start
 
+The [stream-relay-installer](https://github.com/AlexanderWagnerDev/stream-relay-installer/tree/beta) offers guided setup and service management. Docker Engine 20.10+ and Docker Compose v2 are required for the examples. The Compose file starts the RTMP server and its management panel together.
+
+### Docker Compose
+
 ```bash
-docker run -d \
-  --name rtmp-server \
-  --restart always \
-  -p 8090:8080 \
-  -p 1935:1935 \
-  -v rtmp-server-data:/data \
-  alexanderwagnerdev/rtmp-server:alpha
+git clone --branch alpha https://github.com/AlexanderWagnerDev/rtmp-server-docker.git
+cd rtmp-server-docker
+cp .env.example .env
+# Edit .env: API token, stable SECRET_KEY, password and public domain.
+# Generate API token and SECRET_KEY separately: openssl rand -hex 32
+docker compose config --quiet
+docker compose up -d
 ```
+
+Panel: `http://localhost:8001`. Backend health: `http://localhost:8090/api/v1/health`.
 
 ## 📖 Usage
 
-- **RTMP Port**: `1935`
-- **HTTP/API Port**: `8090` on the host, mapped to `8080` inside the container
-- **Health Check**: `http://YOUR_IP:8090/api/v1/health`
-- **JSON Stats**: `http://YOUR_IP:8090/stats?key={stats_key}`
-- **Nginx-compatible XML Stats**: `http://YOUR_IP:8090/stats-nginx?key={stats_key}`
-
-Streams are managed through the HTTP API. On first startup, `librtmp2-server` generates an API token and prints it once to the container logs.
-
-Show logs:
+Create streams in RTMPPanel and copy the provided publish, playback and statistics URLs. Publishing and playback keys may differ. The default application is `live`; freely chosen nginx `/publish/key` URLs do not create streams.
 
 ```bash
-docker logs rtmp-server
+docker compose ps
+docker compose logs -f rtmp-server
 ```
 
-Create a stream:
+## 🔌 Ports
+
+| Service | Host | Container | Protocol |
+| --- | --- | --- | --- |
+| RTMP | 1935 | 1935 | TCP |
+| RTMP API | 8090 | 8080 | TCP |
+| RTMPPanel | 8001 | 8000 | TCP |
+
+The panel reaches the API over the shared Compose network.
+
+## ⚙️ Configuration and storage
+
+See [configuration](docs/configuration.md) for all environment settings, networking, storage and troubleshooting, and [migration](docs/migration.md) for the nginx transition. Copy `.env.example`, generate credentials, and keep `.env` and volume backups private. The panel `SECRET_KEY` must stay unchanged across updates.
+
+## 🔄 Updates
 
 ```bash
-curl -X POST http://YOUR_IP:8090/api/v1/streams \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"id":"mystream","name":"My Live Stream","app":"live"}'
+docker compose pull
+docker compose up -d
 ```
 
-Use the returned `publish_key` as your stream key.
+Retain the same Compose project name, `.env` and named volumes. Do not combine a Compose deployment with a shell-installer deployment using the same names/ports. `docker compose down -v` deletes stored data.
 
-## 🔧 Build from Source
+## 📦 Built With / Related Projects
 
-If you prefer to build the Docker image yourself:
+- [OpenRTMP/librtmp2-server](https://github.com/OpenRTMP/librtmp2-server)
+- [OpenRTMP/librtmp2-server-panel](https://github.com/OpenRTMP/librtmp2-server-panel)
+- [RTMP server Docker](https://github.com/AlexanderWagnerDev/rtmp-server-docker)
+- [RTMPPanel Docker](https://github.com/AlexanderWagnerDev/rtmppanel-docker)
+- [SRTLA server Docker](https://github.com/AlexanderWagnerDev/srtla-server-docker)
+- [SLSPanel Docker](https://github.com/AlexanderWagnerDev/slspanel-docker)
 
-1. **Clone the alpha branch**:
-   ```bash
-   git clone -b alpha https://github.com/AlexanderWagnerDev/rtmp-server-docker.git
-   cd rtmp-server-docker
-   ```
+## 📄 License
 
-2. **Build the image**:
-   ```bash
-   docker build --no-cache -t rtmp-server:alpha .
-   ```
-
-3. **Run the container**:
-   ```bash
-   docker run -d \
-     --name rtmp-server \
-     --restart always \
-     -p 8090:8080 \
-     -p 1935:1935 \
-     -v rtmp-server-data:/data \
-     rtmp-server:alpha
-   ```
-
-## 🐳 Docker Hub
-
-Alpha images should use the `alpha` tag:
-
-```bash
-alexanderwagnerdev/rtmp-server:alpha
-```
-
-Stable images remain available as:
-
-```bash
-alexanderwagnerdev/rtmp-server:latest
-```
-
-## 📝 Configuration
-
-### Ports
-
-- **1935**: RTMP streaming port
-- **8090 → 8080**: HTTP API and statistics interface
-
-### Persistent data
-
-The container stores the SQLite database in `/data`.
-
-Recommended volume:
-
-```bash
--v rtmp-server-data:/data
-```
-
-### Build arguments
-
-The Dockerfile builds `OpenRTMP/librtmp2-server` directly from GitHub.
-
-Default values:
-
-```bash
-LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git
-LIBRTMP2_SERVER_REF=main
-```
-
-You can override them:
-
-```bash
-docker build \
-  --build-arg LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git \
-  --build-arg LIBRTMP2_SERVER_REF=main \
-  -t rtmp-server:alpha .
-```
-
-### Docker Compose (optional)
-
-```yaml
-version: '3'
-services:
-  rtmp-server:
-    image: alexanderwagnerdev/rtmp-server:alpha
-    container_name: rtmp-server
-    restart: always
-    ports:
-      - "1935:1935"
-      - "8090:8080"
-    volumes:
-      - rtmp-server-data:/data
-
-volumes:
-  rtmp-server-data:
-```
+See [LICENSE](LICENSE). Upstream components retain their respective licenses.
 
 ---
 
-# RTMP-Server für Docker — Alpha
+# 🎥 OpenRTMP Docker Server (Deutsch)
 
-Ein schlanker RTMP-Streaming-Server als Docker-Container.
-
-Dies ist der **Alpha-Branch** von `rtmp-server-docker`. Dieser Branch ist als zukünftiger Ersatz für den aktuellen nginx-rtmp basierten `main`-Branch gedacht und baut [`OpenRTMP/librtmp2-server`](https://github.com/OpenRTMP/librtmp2-server) statt `nginx-rtmp-module`.
-
-> ⚠️ Alpha: Dieser Branch ist zum Testen und Entwickeln gedacht. Die stabile nginx-rtmp Variante bleibt weiterhin im `main`-Branch.
+Branch **alpha**: OpenRTMP-Server mit RTMPPanel, persistenten Daten und konfigurierbarer Anmeldung. Die Struktur folgt SRTLA-Server und SLSPanel: Compose-Datei, Umgebungsbeispiel, Konfiguration, Fehlerbehebung und Projektlinks.
 
 ## 🚀 Schnellstart
 
-```bash
-docker run -d \
-  --name rtmp-server \
-  --restart always \
-  -p 8090:8080 \
-  -p 1935:1935 \
-  -v rtmp-server-data:/data \
-  alexanderwagnerdev/rtmp-server:alpha
-```
+Den oben gezeigten Branch klonen, `.env.example` nach `.env` kopieren und API-Token, festen `SECRET_KEY`, Passwort und öffentliche Domain eintragen. API-Token und Secret mit jeweils einem eigenen Aufruf von `openssl rand -hex 32` erzeugen. Danach `docker compose config --quiet` und `docker compose up -d` ausführen.
 
-## 📖 Verwendung
+Die Compose-Datei startet Server und Panel gemeinsam; das Panel erreicht den Server intern über `rtmp-server:8080`.
 
-- **RTMP-Port**: `1935`
-- **HTTP/API-Port**: `8090` am Host, intern im Container `8080`
-- **Healthcheck**: `http://DEINE_IP:8090/api/v1/health`
-- **JSON-Statistiken**: `http://DEINE_IP:8090/stats?key={stats_key}`
-- **Nginx-kompatible XML-Statistiken**: `http://DEINE_IP:8090/stats-nginx?key={stats_key}`
+## 📖 Verwendung und Konfiguration
 
-Streams werden über die HTTP API verwaltet. Beim ersten Start generiert `librtmp2-server` einen API-Token und gibt ihn einmalig in den Container-Logs aus.
+Das Panel läuft standardmäßig auf Port **8001**, die RTMP-API auf **8090**, RTMP auf **1935**. Streams im Panel anlegen und die dort angezeigten Sende-, Wiedergabe- und Statistik-URLs verwenden. Sende- und Wiedergabe-Keys können verschieden sein.
 
-Logs anzeigen:
+[Konfiguration und Fehlerbehebung](docs/configuration.md) · [Migration von nginx](docs/migration.md)
 
-```bash
-docker logs rtmp-server
-```
+Bei Updates `.env`, denselben Compose-Projektnamen, Datenvolumes und den festen `SECRET_KEY` behalten. `docker compose down -v` löscht Daten. Den interaktiven Installer und Compose als getrennte Installationswege behandeln; beim Wechsel Daten ausdrücklich migrieren.
 
-Stream erstellen:
+## 📄 Lizenz
 
-```bash
-curl -X POST http://DEINE_IP:8090/api/v1/streams \
-  -H "Authorization: Bearer DEIN_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"id":"mystream","name":"My Live Stream","app":"live"}'
-```
-
-Den zurückgegebenen `publish_key` verwendest du danach als Stream-Key.
-
-## 🔧 Selbst bauen
-
-Falls du das Docker-Image selbst erstellen möchtest:
-
-1. **Alpha-Branch klonen**:
-   ```bash
-   git clone -b alpha https://github.com/AlexanderWagnerDev/rtmp-server-docker.git
-   cd rtmp-server-docker
-   ```
-
-2. **Image bauen**:
-   ```bash
-   docker build --no-cache -t rtmp-server:alpha .
-   ```
-
-3. **Container starten**:
-   ```bash
-   docker run -d \
-     --name rtmp-server \
-     --restart always \
-     -p 8090:8080 \
-     -p 1935:1935 \
-     -v rtmp-server-data:/data \
-     rtmp-server:alpha
-   ```
-
-## 🐳 Docker Hub
-
-Alpha-Images sollten den `alpha`-Tag verwenden:
-
-```bash
-alexanderwagnerdev/rtmp-server:alpha
-```
-
-Stabile Images bleiben weiterhin verfügbar als:
-
-```bash
-alexanderwagnerdev/rtmp-server:latest
-```
-
-## 📝 Konfiguration
-
-### Ports
-
-- **1935**: RTMP-Streaming-Port
-- **8090 → 8080**: HTTP API und Statistik-Interface
-
-### Persistente Daten
-
-Der Container speichert die SQLite-Datenbank unter `/data`.
-
-Empfohlenes Volume:
-
-```bash
--v rtmp-server-data:/data
-```
-
-### Build-Argumente
-
-Das Dockerfile baut `OpenRTMP/librtmp2-server` direkt von GitHub.
-
-Standardwerte:
-
-```bash
-LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git
-LIBRTMP2_SERVER_REF=main
-```
-
-Du kannst sie überschreiben:
-
-```bash
-docker build \
-  --build-arg LIBRTMP2_SERVER_REPO=https://github.com/OpenRTMP/librtmp2-server.git \
-  --build-arg LIBRTMP2_SERVER_REF=main \
-  -t rtmp-server:alpha .
-```
-
-### Docker Compose (optional)
-
-```yaml
-version: '3'
-services:
-  rtmp-server:
-    image: alexanderwagnerdev/rtmp-server:alpha
-    container_name: rtmp-server
-    restart: always
-    ports:
-      - "1935:1935"
-      - "8090:8080"
-    volumes:
-      - rtmp-server-data:/data
-
-volumes:
-  rtmp-server-data:
-```
+Details siehe [LICENSE](LICENSE).
