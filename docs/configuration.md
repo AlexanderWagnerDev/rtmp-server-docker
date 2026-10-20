@@ -53,3 +53,11 @@ docker build -t alexanderwagnerdev/rtmp-server:alpha .
 ```
 
 Build arguments can override the repository/revision for local testing. The multi-platform publishing workflow remains manually dispatched; PR validation does not publish images. / Der Veröffentlichungs-Workflow bleibt manuell; PR-Prüfungen veröffentlichen keine Images.
+
+## Browser stats and worker settings / Browser-Statistiken und Worker
+
+The panel's API URL stays internal (`http://rtmp-server:8080`). Set `LRTMP2_STATS_URL` to a browser-reachable backend URL, including a custom port. When left blank, the example uses localhost and `RTMP_API_PORT`; replace it with a public domain for remote viewers. API requests and browser stats URLs are independent.
+
+The default `GUNICORN_WORKERS=1` works with `RATELIMIT_STORAGE_URI=memory://`. Multiple workers require a separately deployed shared session/rate-limit backend, for example Redis. To intentionally disable login, set both `REQUIRE_LOGIN=False` and `ALLOW_INSECURE_NO_LOGIN=1`; the default acknowledgement is 0.
+
+Die API bleibt im Docker-Netz. `LRTMP2_STATS_URL` erhält die im Browser erreichbare Backend-Adresse einschließlich eines eigenen Ports. Leer verwendet das Beispiel localhost und `RTMP_API_PORT`; für entfernte Zuschauer eine öffentliche Domain eintragen. Ein Worker funktioniert mit `memory://`; mehrere Worker benötigen einen gemeinsamen Session-/Rate-Limit-Backend. Zum bewussten Abschalten der Anmeldung zusätzlich `ALLOW_INSECURE_NO_LOGIN=1` setzen.
